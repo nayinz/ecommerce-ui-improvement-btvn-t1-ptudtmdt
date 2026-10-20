@@ -1,0 +1,468 @@
+
+        /* ========================================================
+           1. THIẾT LẬP BIẾN (VARIABLES) & RESET
+           ======================================================== */
+        :root {
+            /* Nền Dark Mode */
+            --bg-dark-start: #0F172A; /* Midnight Blue */
+            --bg-dark-end: #000000;   /* Deep Onyx */
+            
+            /* Hiệu ứng Glassmorphism */
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-hover: rgba(255, 255, 255, 0.08);
+            
+            /* Màu sắc thương hiệu */
+            --rose-gold-gradient: linear-gradient(135deg, #F3B5A6 0%, #D88B77 100%);
+            --rose-gold-text: #E5A08F;
+            --success-color: #10B981;
+            
+            /* Màu chữ */
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-dark-start), var(--bg-dark-end));
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* ========================================================
+           2. BỐ CỤC CHÍNH (LAYOUT SPLIT-SCREEN 6:4)
+           ======================================================== */
+        .cart-wrapper {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: grid;
+            grid-template-columns: 6fr 4fr; /* Tỷ lệ 6:4 */
+            gap: 40px;
+            align-items: start; /* Quan trọng để cột phải có thể sticky */
+        }
+
+        /* ========================================================
+           3. CỘT TRÁI: DANH SÁCH SẢN PHẨM
+           ======================================================== */
+        .cart-main {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .cart-header {
+            margin-bottom: 10px;
+        }
+
+        .cart-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .cart-count {
+            color: var(--rose-gold-text);
+            font-weight: 400;
+        }
+
+        /* Thẻ Sản phẩm (Glassmorphism) */
+        .product-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+            position: relative;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .product-card:hover {
+            border-color: rgba(243, 181, 166, 0.3); /* Ánh viền Rose Gold khi hover */
+            transform: translateY(-2px);
+        }
+
+        .product-info-wrapper {
+            display: flex;
+            gap: 20px;
+        }
+
+        .product-image {
+            width: 110px;
+            height: 110px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 1px solid var(--glass-border);
+        }
+
+        .product-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .product-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .product-variant {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .product-bottom-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .product-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--rose-gold-text);
+        }
+
+        /* Bộ đếm số lượng Pill-shape */
+        .qty-pill {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 4px;
+        }
+
+        .btn-qty {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .btn-qty:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .qty-value {
+            width: 30px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        /* Nút Xóa (Icon Thùng rác) */
+        .btn-remove {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-remove:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        .btn-remove svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--text-secondary);
+            transition: fill 0.2s ease;
+        }
+
+        .btn-remove:hover svg {
+            fill: #FCA5A5;
+        }
+
+        /* Gợi ý nâng cấp (Upsell) */
+        .upsell-banner {
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: rgba(216, 139, 119, 0.1);
+            border: 1px dashed rgba(243, 181, 166, 0.4);
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .upsell-text {
+            font-size: 14px;
+            color: var(--rose-gold-text);
+        }
+
+        .btn-upsell {
+            background: transparent;
+            border: 1px solid var(--rose-gold-text);
+            color: var(--rose-gold-text);
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-upsell:hover {
+            background: var(--rose-gold-gradient);
+            color: #000;
+            border-color: transparent;
+        }
+
+        /* ========================================================
+           4. CỘT PHẢI: TÓM TẮT ĐƠN HÀNG (STICKY)
+           ======================================================== */
+        .cart-sidebar {
+            position: sticky;
+            top: 40px; /* Khóa cố định khi cuộn */
+        }
+
+        .summary-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* Gamification Progress Bar */
+        .gamification-box {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .gamification-text {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .gamification-text strong {
+            color: var(--rose-gold-text);
+        }
+
+        .progress-track {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 75%; /* Giả lập đang đạt 75% */
+            background: var(--rose-gold-gradient);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(243, 181, 166, 0.5);
+        }
+
+        /* Danh sách chi phí */
+        .cost-list {
+            list-style: none;
+            margin-bottom: 24px;
+        }
+
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        .cost-item dd {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .cost-item.free dd {
+            color: var(--success-color);
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        /* Ô nhập mã giảm giá Pill-shape */
+        .promo-pill {
+            display: flex;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 4px;
+            margin-bottom: 24px;
+            transition: border-color 0.3s;
+        }
+
+        .promo-pill:focus-within {
+            border-color: var(--rose-gold-text);
+        }
+
+        .promo-pill input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 10px 16px;
+            color: var(--text-primary);
+            outline: none;
+            font-size: 14px;
+        }
+
+        .promo-pill input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .btn-apply {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border: none;
+            padding: 0 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-apply:hover {
+            background: var(--text-primary);
+            color: var(--bg-dark-start);
+        }
+
+        /* Tổng tiền Gradient */
+        .total-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--glass-border);
+            margin-bottom: 24px;
+        }
+
+        .total-label {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .total-amount {
+            font-size: 28px;
+            font-weight: 700;
+            background: var(--rose-gold-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Nút Thanh toán Pill-shape */
+        .btn-checkout {
+            display: block;
+            width: 100%;
+            background: var(--rose-gold-gradient);
+            color: #1E1B4B;
+            text-align: center;
+            padding: 16px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(216, 139, 119, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-checkout:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(216, 139, 119, 0.5);
+        }
+
+        /* Trust Badges (Cam kết) */
+        .trust-badges {
+            margin-top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .badge-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .badge-item svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--rose-gold-text);
+            flex-shrink: 0;
+        }
+
+        /* ========================================================
+           5. RESPONSIVE DESIGN (Điện thoại & Tablet)
+           ======================================================== */
+        @media (max-width: 992px) {
+            .cart-wrapper {
+                grid-template-columns: 1fr; /* Gộp thành 1 cột */
+                gap: 30px;
+            }
+            .cart-sidebar {
+                position: static; /* Tắt sticky trên mobile */
+            }
+        }
+
+        @media (max-width: 576px) {
+            .product-info-wrapper {
+                flex-direction: column;
+            }
+            .product-image {
+                width: 100%;
+                height: 160px;
+            }
+            .product-bottom-row {
+                margin-top: 16px;
+            }
+            .upsell-banner {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+        }

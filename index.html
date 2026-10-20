@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ Hàng Cao Cấp | EMBrace</title>
+    <!-- Nhúng Font Inter để giao diện hiện đại hơn -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- 
+      GHI CHÚ DÀNH CHO BÀI TẬP: 
+      Để tách file CSS theo yêu cầu của giáo viên, bạn hãy cắt toàn bộ nội dung 
+      từ sau thẻ <style> đến trước thẻ </style> và dán vào một file tên là 'style.css'.
+      Sau đó, thay thế cụm thẻ <style>...</style> này bằng dòng:
+      <link rel="stylesheet" href="style.css">
+    -->
+    <style>
+        /* ========================================================
+           1. THIẾT LẬP BIẾN (VARIABLES) & RESET
+           ======================================================== */
+        :root {
+            /* Nền Dark Mode */
+            --bg-dark-start: #0F172A; /* Midnight Blue */
+            --bg-dark-end: #000000;   /* Deep Onyx */
+            
+            /* Hiệu ứng Glassmorphism */
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-hover: rgba(255, 255, 255, 0.08);
+            
+            /* Màu sắc thương hiệu */
+            --rose-gold-gradient: linear-gradient(135deg, #F3B5A6 0%, #D88B77 100%);
+            --rose-gold-text: #E5A08F;
+            --success-color: #10B981;
+            
+            /* Màu chữ */
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-dark-start), var(--bg-dark-end));
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* ========================================================
+           2. BỐ CỤC CHÍNH (LAYOUT SPLIT-SCREEN 6:4)
+           ======================================================== */
+        .cart-wrapper {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: grid;
+            grid-template-columns: 6fr 4fr; /* Tỷ lệ 6:4 */
+            gap: 40px;
+            align-items: start; /* Quan trọng để cột phải có thể sticky */
+        }
+
+        /* ========================================================
+           3. CỘT TRÁI: DANH SÁCH SẢN PHẨM
+           ======================================================== */
+        .cart-main {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .cart-header {
+            margin-bottom: 10px;
+        }
+
+        .cart-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .cart-count {
+            color: var(--rose-gold-text);
+            font-weight: 400;
+        }
+
+        /* Thẻ Sản phẩm (Glassmorphism) */
+        .product-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+            position: relative;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .product-card:hover {
+            border-color: rgba(243, 181, 166, 0.3); /* Ánh viền Rose Gold khi hover */
+            transform: translateY(-2px);
+        }
+
+        .product-info-wrapper {
+            display: flex;
+            gap: 20px;
+        }
+
+        .product-image {
+            width: 110px;
+            height: 110px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 1px solid var(--glass-border);
+        }
+
+        .product-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .product-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .product-variant {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .product-bottom-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .product-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--rose-gold-text);
+        }
+
+        /* Bộ đếm số lượng Pill-shape */
+        .qty-pill {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 4px;
+        }
+
+        .btn-qty {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .btn-qty:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .qty-value {
+            width: 30px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        /* Nút Xóa (Icon Thùng rác) */
+        .btn-remove {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-remove:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        .btn-remove svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--text-secondary);
+            transition: fill 0.2s ease;
+        }
+
+        .btn-remove:hover svg {
+            fill: #FCA5A5;
+        }
+
+        /* Gợi ý nâng cấp (Upsell) */
+        .upsell-banner {
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: rgba(216, 139, 119, 0.1);
+            border: 1px dashed rgba(243, 181, 166, 0.4);
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .upsell-text {
+            font-size: 14px;
+            color: var(--rose-gold-text);
+        }
+
+        .btn-upsell {
+            background: transparent;
+            border: 1px solid var(--rose-gold-text);
+            color: var(--rose-gold-text);
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-upsell:hover {
+            background: var(--rose-gold-gradient);
+            color: #000;
+            border-color: transparent;
+        }
+
+        /* ========================================================
+           4. CỘT PHẢI: TÓM TẮT ĐƠN HÀNG (STICKY)
+           ======================================================== */
+        .cart-sidebar {
+            position: sticky;
+            top: 40px; /* Khóa cố định khi cuộn */
+        }
+
+        .summary-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* Gamification Progress Bar */
+        .gamification-box {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .gamification-text {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .gamification-text strong {
+            color: var(--rose-gold-text);
+        }
+
+        .progress-track {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 75%; /* Giả lập đang đạt 75% */
+            background: var(--rose-gold-gradient);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(243, 181, 166, 0.5);
+        }
+
+        /* Danh sách chi phí */
+        .cost-list {
+            list-style: none;
+            margin-bottom: 24px;
+        }
+
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        .cost-item dd {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .cost-item.free dd {
+            color: var(--success-color);
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        /* Ô nhập mã giảm giá Pill-shape */
+        .promo-pill {
+            display: flex;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 4px;
+            margin-bottom: 24px;
+            transition: border-color 0.3s;
+        }
+
+        .promo-pill:focus-within {
+            border-color: var(--rose-gold-text);
+        }
+
+        .promo-pill input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 10px 16px;
+            color: var(--text-primary);
+            outline: none;
+            font-size: 14px;
+        }
+
+        .promo-pill input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .btn-apply {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border: none;
+            padding: 0 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-apply:hover {
+            background: var(--text-primary);
+            color: var(--bg-dark-start);
+        }
+
+        /* Tổng tiền Gradient */
+        .total-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--glass-border);
+            margin-bottom: 24px;
+        }
+
+        .total-label {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .total-amount {
+            font-size: 28px;
+            font-weight: 700;
+            background: var(--rose-gold-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Nút Thanh toán Pill-shape */
+        .btn-checkout {
+            display: block;
+            width: 100%;
+            background: var(--rose-gold-gradient);
+            color: #1E1B4B;
+            text-align: center;
+            padding: 16px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(216, 139, 119, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-checkout:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(216, 139, 119, 0.5);
+        }
+
+        /* Trust Badges (Cam kết) */
+        .trust-badges {
+            margin-top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .badge-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .badge-item svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--rose-gold-text);
+            flex-shrink: 0;
+        }
+
+        /* ========================================================
+           5. RESPONSIVE DESIGN (Điện thoại & Tablet)
+           ======================================================== */
+        @media (max-width: 992px) {
+            .cart-wrapper {
+                grid-template-columns: 1fr; /* Gộp thành 1 cột */
+                gap: 30px;
+            }
+            .cart-sidebar {
+                position: static; /* Tắt sticky trên mobile */
+            }
+        }
+
+        @media (max-width: 576px) {
+            .product-info-wrapper {
+                flex-direction: column;
+            }
+            .product-image {
+                width: 100%;
+                height: 160px;
+            }
+            .product-bottom-row {
+                margin-top: 16px;
+            }
+            .upsell-banner {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cart-wrapper">
+        <!-- ==========================================
+             CỘT TRÁI: DANH SÁCH SẢN PHẨM (60%)
+             ========================================== -->
+        <main class="cart-main">
+            <header class="cart-header">
+                <h1 class="cart-title">Giỏ hàng của bạn <span class="cart-count">(04)</span></h1>
+            </header>
+
+            <!-- Sản phẩm 1 (Có kèm Upsell) -->
+            <article class="product-card">
+                <button class="btn-remove" aria-label="Xóa sản phẩm" title="Xóa sản phẩm">
+                    <svg viewBox="0 0 24 24"><path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/></svg>
+                </button>
+                <div class="product-info-wrapper">
+                    <img src="https://placehold.co/200x200/2A2A35/F3B5A6?text=Standard" alt="Aegis Bangle Standard" class="product-image">
+                    <div class="product-details">
+                        <h3 class="product-name">Vòng tay EMBrace Aegis</h3>
+                        <p class="product-variant">Bản: Standard | Màu: Rose Gold | Size: Freesize</p>
+                        <div class="product-bottom-row">
+                            <span class="product-price">895.000 ₫</span>
+                            <div class="qty-pill">
+                                <button class="btn-qty">-</button>
+                                <span class="qty-value">1</span>
+                                <button class="btn-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Banner Upsell hiển thị ngay dưới sản phẩm 1 -->
+                <div class="upsell-banner">
+                    <span class="upsell-text">✨ Nâng cấp lên bản <b>Guardian</b> chỉ với +700.000 ₫</span>
+                    <button class="btn-upsell">Nâng cấp ngay</button>
+                </div>
+            </article>
+
+            <!-- Sản phẩm 2 -->
+            <article class="product-card">
+                <button class="btn-remove" aria-label="Xóa sản phẩm" title="Xóa sản phẩm">
+                    <svg viewBox="0 0 24 24"><path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/></svg>
+                </button>
+                <div class="product-info-wrapper">
+                    <img src="https://placehold.co/200x200/2A2A35/D88B77?text=Guardian" alt="Aegis Bangle Guardian" class="product-image">
+                    <div class="product-details">
+                        <h3 class="product-name">Vòng tay EMBrace Aegis</h3>
+                        <p class="product-variant">Bản: Guardian | Màu: Silver | Size: Freesize</p>
+                        <div class="product-bottom-row">
+                            <span class="product-price">1.595.000 ₫</span>
+                            <div class="qty-pill">
+                                <button class="btn-qty">-</button>
+                                <span class="qty-value">1</span>
+                                <button class="btn-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Sản phẩm 3 -->
+            <article class="product-card">
+                <button class="btn-remove" aria-label="Xóa sản phẩm" title="Xóa sản phẩm">
+                    <svg viewBox="0 0 24 24"><path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/></svg>
+                </button>
+                <div class="product-info-wrapper">
+                    <img src="https://placehold.co/200x200/2A2A35/E5A08F?text=Necklace" alt="Dây chuyền EMBrace" class="product-image">
+                    <div class="product-details">
+                        <h3 class="product-name">Dây chuyền thông minh EMBrace</h3>
+                        <p class="product-variant">Màu: Gold | Chiều dài: 45cm</p>
+                        <div class="product-bottom-row">
+                            <span class="product-price">1.250.000 ₫</span>
+                            <div class="qty-pill">
+                                <button class="btn-qty">-</button>
+                                <span class="qty-value">1</span>
+                                <button class="btn-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Sản phẩm 4 -->
+            <article class="product-card">
+                <button class="btn-remove" aria-label="Xóa sản phẩm" title="Xóa sản phẩm">
+                    <svg viewBox="0 0 24 24"><path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/></svg>
+                </button>
+                <div class="product-info-wrapper">
+                    <img src="https://placehold.co/200x200/2A2A35/FFFFFF?text=Gift+Box" alt="Hộp quà Premium" class="product-image">
+                    <div class="product-details">
+                        <h3 class="product-name">Hộp quà Premium EMBrace</h3>
+                        <p class="product-variant">Dịch vụ đóng gói cao cấp kèm thiệp</p>
+                        <div class="product-bottom-row">
+                            <span class="product-price">250.000 ₫</span>
+                            <div class="qty-pill">
+                                <button class="btn-qty">-</button>
+                                <span class="qty-value">1</span>
+                                <button class="btn-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </main>
+
+        <!-- ==========================================
+             CỘT PHẢI: TÓM TẮT ĐƠN HÀNG (40% - STICKY)
+             ========================================== -->
+        <aside class="cart-sidebar">
+            <div class="summary-panel">
+                
+                <!-- Gamification (Thanh tiến trình) -->
+                <div class="gamification-box">
+                    <p class="gamification-text">Mua thêm <strong>500.000 ₫</strong> để nhận dịch vụ <strong>KHẮC TÊN MIỄN PHÍ</strong></p>
+                    <div class="progress-track">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+
+                <!-- Chi tiết chi phí -->
+                <dl class="cost-list">
+                    <div class="cost-item">
+                        <dt>Tạm tính (4 sản phẩm)</dt>
+                        <dd>3.990.000 ₫</dd>
+                    </div>
+                    <div class="cost-item">
+                        <dt>Mã ưu đãi (EMBRACE10)</dt>
+                        <dd style="color: var(--rose-gold-text);">- 399.000 ₫</dd>
+                    </div>
+                    <div class="cost-item free">
+                        <dt>Phí vận chuyển</dt>
+                        <dd>Miễn phí</dd>
+                    </div>
+                    <div class="cost-item">
+                        <dt>Gói bảo hành (Care+)</dt>
+                        <dd>Kích hoạt sẵn</dd>
+                    </div>
+                </dl>
+
+                <!-- Nhập mã ưu đãi -->
+                <div class="promo-pill">
+                    <input type="text" placeholder="Nhập mã giảm giá..." aria-label="Mã giảm giá">
+                    <button type="button" class="btn-apply">Áp dụng</button>
+                </div>
+
+                <!-- Tổng thanh toán -->
+                <div class="total-section">
+                    <span class="total-label">Tổng cộng</span>
+                    <span class="total-amount">3.591.000 ₫</span>
+                </div>
+
+                <!-- Nút CTA chính -->
+                <button type="button" class="btn-checkout">Tiến hành thanh toán</button>
+
+                <!-- Cam kết (Trust Badges bằng SVG) -->
+                <div class="trust-badges">
+                    <div class="badge-item">
+                        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+                        <span>Thanh toán an toàn, bảo mật dữ liệu 100%</span>
+                    </div>
+                    <div class="badge-item">
+                        <svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+                        <span>Miễn phí giao hàng hỏa tốc toàn quốc</span>
+                    </div>
+                    <div class="badge-item">
+                        <svg viewBox="0 0 24 24"><path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg>
+                        <span>Bảo hành chính hãng 1 đổi 1 trong 30 ngày</span>
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+    </div>
+
+</body>
+</html>
